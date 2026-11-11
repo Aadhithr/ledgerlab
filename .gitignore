@@ -1,0 +1,9 @@
+node_modules
+dist
+.ledgerlab
+*.tmp
+.ledgerlab-demo
+.env
+.env.*
+*.log
+.DS_Store
