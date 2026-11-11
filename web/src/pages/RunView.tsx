@@ -110,7 +110,7 @@ export function RunPage({ runId }: { runId?: string }) {
   const control = (a: Record<string, unknown>) => api.control(run.id, a).catch((e) => alert(e.message));
   const rerun = async (n: number) => {
     const res = run.testId
-      ? await api.startRuns({ agentId: run.agent.id, testIds: [run.testId], repeat: n, paceMs: n === 1 && run.agent.provider === "scripted" ? 600 : undefined })
+      ? await api.startRuns({ agentId: run.agent.id, testIds: [run.testId], repeat: n, paceMs: n === 1 ? (run.agent.provider === "scripted" ? 900 : 1200) : undefined })
       : await api.startRuns({ agentId: run.agent.id, scenarioId: run.scenarioId, repeat: n });
     go(n === 1 ? `run/${res.runIds[0]}` : "results");
   };
@@ -185,6 +185,12 @@ export function RunPage({ runId }: { runId?: string }) {
             </div>
           )}
         </div>
+        {summary?.status === "paused" && (
+          <div className="notice" style={{ marginTop: 10 }}>
+            {events.some((e) => e.actor === "agent") ? "Paused." : "Paused before the agent’s first move."} Press <b>Resume</b> to let it run, or <b>Step</b> through one action at a time.
+            You can inject an exception or move the clock while it waits.
+          </div>
+        )}
         {live && (
           <input className="scrub" type="range" min={0} max={last} value={at} onChange={(e) => setCursor(Number(e.target.value) >= last ? null : Number(e.target.value))} style={{ marginTop: 10 }} />
         )}

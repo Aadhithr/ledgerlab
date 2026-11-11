@@ -159,9 +159,11 @@ table.t { width: 100%; border-collapse: collapse; }
 .check-row:last-child { border-bottom: 0; }
 
 /* tests */
-.test-card { padding: 12px 14px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 22px 1fr auto; gap: 10px; align-items: start; }
+.test-card { padding: 12px 14px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: start; }
 .test-card:last-child { border-bottom: 0; }
-.chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; min-width: 0; }
+/* Long rule chips wrap instead of pushing the Watch live button off the card. */
+.chips .pill { white-space: normal; height: auto; min-height: 22px; padding-top: 2px; padding-bottom: 2px; max-width: 100%; }
 
 /* results */
 .matrix td.cell { text-align: center; font-variant-numeric: tabular-nums; font-weight: 500; }

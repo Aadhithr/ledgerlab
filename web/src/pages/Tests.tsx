@@ -57,7 +57,10 @@ export function TestsPage({ autoGenerate }: { autoGenerate?: boolean }) {
   const run = async (ids: string[], n: number, live = false) => {
     setBusy("run");
     try {
-      const res = await api.startRuns({ agentId: agent.id, testIds: ids, repeat: n, paceMs: live ? (agent.provider === "scripted" ? 650 : 0) : undefined });
+      // Watch live starts paused before the first move and paces every step, so there is time to inject chaos or move the clock.
+      const res = await api.startRuns(live
+        ? { agentId: agent.id, testIds: ids, repeat: 1, paceMs: agent.provider === "scripted" ? 900 : 1200, startPaused: true }
+        : { agentId: agent.id, testIds: ids, repeat: n });
       if (res.runIds.length === 1 || live) go(`run/${res.runIds[0]}`);
       else go("results");
     } catch (e) {
@@ -136,7 +139,7 @@ export function TestsPage({ autoGenerate }: { autoGenerate?: boolean }) {
                     <div className="col" style={{ alignItems: "flex-end", gap: 6 }}>
                       <Rate pass={h.pass} total={h.total} />
                       <div className="row">
-                        <button className="btn sm" disabled={!!busy} onClick={() => run([t.id], 1, true)} title="Run with pacing so you can watch, chaos and clock controls enabled">Watch live</button>
+                        <button className="btn sm primary" disabled={!!busy} onClick={() => run([t.id], 1, true)} title="Opens the run paused so you can step through it, inject exceptions and move the clock">▶ Watch live</button>
                         <button className="btn sm ghost" onClick={() => api.deleteTest(t.id)} title="Delete test">✕</button>
                       </div>
                     </div>
